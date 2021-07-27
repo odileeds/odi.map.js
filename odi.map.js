@@ -1,6 +1,6 @@
 /**
   ODI Leeds Tiny Slippy Map
-  Version 0.1
+  Version 0.1.2
 **/
 // jshint esversion: 6
 (function(root){
@@ -24,7 +24,7 @@
 
 	function Map(el,attr){
 		var title = "ODI Map";
-		this.version = "0.1.1";
+		this.version = "0.1.2";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
 			// Version 1.1
@@ -316,7 +316,7 @@
 			for(x = min.xint; x <= max.xint; x++){
 				if(subs > 0) s = x%subs;
 				for(y = min.yint; y <= max.yint; y++){
-					turl = this._url.replace(/\{z\}/g,z).replace(/\{y\}/g,y).replace(/\{x\}/g,x);
+					turl = this._url.replace(/\{z\}/g,z).replace(/\{y\}/g,y).replace(/\{x\}/g,x).replace(/\{r\}/g,(window.devicePixelRatio > 1 ? '@2x':''));
 					if(subs > 0) turl = turl.replace(/\{s\}/g,this._attr.subdomains[s]);
 					urls.push({'url':turl,z:z,'tile':Tile(x,y)});
 				}
