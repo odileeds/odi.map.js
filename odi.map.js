@@ -24,14 +24,14 @@
 
 	function Map(el,attr){
 		var title = "ODI Map";
-		var version = "0.1";
+		this.version = "0.1.1";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
 			// Version 1.1
 			if(this.logging || arguments[0]=="ERROR" || arguments[0]=="WARNING"){
 				var args = Array.prototype.slice.call(arguments, 0);
 				// Build basic result
-				var extra = ['%c'+title+' '+version+'%c: '+args[1],'font-weight:bold;',''];
+				var extra = ['%c'+title+' '+this.version+'%c: '+args[1],'font-weight:bold;',''];
 				// If there are extra parameters passed we add them
 				if(args.length > 2) extra = extra.concat(args.splice(2));
 				if(console && typeof console.log==="function"){
@@ -57,7 +57,6 @@
 		drag = false;
 		this.panes = {'el':document.createElement('div'),'p':{'tile':{},'overlay':{},'marker':{},'labels':{}}};
 		this.controls = {};
-
 		this.addPane = function(p){
 			if(!this.panes.p[p] || !this.panes.p[p].el){
 				var pane = document.createElement('div');
