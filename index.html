@@ -116,9 +116,17 @@
 		<div class="holder">
 			<p id="intro"><a href="odi.map.js">odi.map.js</a> (11.8kB; <a href="odi.map.min.js">7.7kB minified</a>; 3.5kB minified+gzipped) is our tiny, standalone, Javascript library for making basic slippy maps. There are some <a href="#ex1">examples below</a>.</p>
 
+			<div>
+				<pre class="prettyprint lang-html hljs">
+				&lt;script src="<a href="odi.map.js">odi.map.js</a>"&gt;&lt;/script&gt;
+				&lt;link rel="StyleSheet" href="<a href="odi.map.css">odi.map.css</a>" type="text/css" /&gt;
+				</pre>
+			</div>
+
 			<section class="example" id="ex1">
 				<h2>A basic map</h2>
 				<p>Let's create a very basic map using standard OpenStreetMap tiles. We centre the map on ODI Leeds.</p>
+
 				<div class="example-code">
 					<style>
 					/* Define the size of the map area */
@@ -203,7 +211,6 @@
 							pane: 'labels'
 						}).addTo(map3);
 					});
-					
 					</script>
 				</div>
 			</section>
