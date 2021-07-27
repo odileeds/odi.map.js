@@ -63,7 +63,7 @@
 			js = (js);
 
 			js = js.replace(/^\t*ODI\.ready\(function\(\)\{/g,function(m,p1){ return ""; });
-			js = js.replace(/\}\)\;$/g,function(m,p1){ return ""; });
+			//js = js.replace(/\}\)\;$/g,function(m,p1){ return ""; });
 			
 			code = sanitise((tidy(temp)));
 			code = code.replace(/(src|href)=\"([^\"]+)\"/g,function(m,p1,p2){ return p1+'="<a href="'+p2+'">'+p2+'</a>"'; });
