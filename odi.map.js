@@ -1,6 +1,6 @@
 /**
   ODI Leeds Tiny Slippy Map
-  Version 0.1.3
+  Version 0.1.4
 **/
 // jshint esversion: 6
 (function(root){
@@ -24,7 +24,7 @@
 
 	function Map(el,attr){
 		var title = "ODI Map";
-		this.version = "0.1.3";
+		this.version = "0.1.4";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
 			// Version 1.1
@@ -73,10 +73,9 @@
 		this.updateLayers = function(bounds,zoom){
 			if(typeof zoom!=="number") zoom = this.getZoom();
 			if(!bounds) bounds = this.getBounds();
-
-			var p,l,pos,a;
+			var p,l,pos,a,attr;
 			pos = {x:0,y:0};
-			var attr = '';
+			attr = '';
 			for(p in this.panes.p){
 				if(this.panes.p[p]){
 					for(l in this.panes.p[p].layers){
@@ -92,10 +91,10 @@
 			return this;
 		};
 		this.getZoom = function(){ return zoom; };
-		this.setZoom = function(z,update){
+		this.setZoom = function(z,noupdate){
 			zoom = Math.min(z,attr.maxZoom);
 			bounds = this.getBounds();
-			this.updateLayers(bounds,zoom);
+			if(!noupdate) this.updateLayers(bounds,zoom);
 			return this;
 		};
 		this.zoomIn = function(n){ return this.setZoom(zoom+n); };
@@ -144,7 +143,7 @@
 		center = LatLon(attr.center[0],attr.center[1]);
 
 		// Set the default zoom level
-		this.setZoom(attr.zoom||12);
+		this.setZoom(attr.zoom||12,true);
 
 		// Add style to map
 		el.classList.add('odi-map');
@@ -162,9 +161,10 @@
 		for(p in this.panes.p){
 			if(this.panes.p[p]) this.addPane(p);
 		}
+		var init = false;
 
 		// Update layers on resize
-		var resizeO = new ResizeObserver(entries => { this.updateLayers(); });
+		var resizeO = new ResizeObserver(entries => { if(init) this.updateLayers(); });
 		resizeO.observe(this.panes.el);
 
 		var startdrag = {};
@@ -203,6 +203,7 @@
 		for(p in plugins){
 			if(plugins[p]) plugins[p].exec(this);
 		}
+		init = true;
 		return this;
 	}
 	Map.prototype.register = function(name,p){

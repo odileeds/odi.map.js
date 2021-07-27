@@ -61,6 +61,7 @@
 		border-top: 1px solid #999;
 		margin-top: 4em;
 		padding-top: 4em;
+		margin-bottom: 4em;
 	}
 	h2 + *, h3 + * { margin-top: 1em; }
 	h4 { margin-top: 1em; font-weight: bold; }
@@ -114,7 +115,7 @@
 	<div class="padded">
 		<div class="holder">
 			<p id="intro"><a href="odi.map.js">odi.map.js</a> (11.8kB; <a href="odi.map.min.js">7.7kB minified</a>; 3.5kB minified+gzipped) is our tiny, standalone, Javascript library for making basic slippy maps. There are some <a href="#ex1">examples below</a>.</p>
-	
+
 			<section class="example" id="ex1">
 				<h2>A basic map</h2>
 				<p>Let's create a very basic map using standard OpenStreetMap tiles. We centre the map on ODI Leeds.</p>
@@ -141,8 +142,8 @@
 			</section>
 
 			<section class="example" id="ex2">
-				<h2>A basic map #2</h2>
-				<p>In this example we use CartoDB light tiles and use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map.</p>
+				<h2>fitBounds()</h2>
+				<p>In this example we use CycleOSM tiles and use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map.</p>
 				<div class="example-code">
 					<style>
 					/* Define the size of the map area */
@@ -156,16 +157,14 @@
 						var lon = -1.53393;
 						var d = 0.5;
 						
-						map2 = new ODI.map(document.getElementById('map2'),{});
-						map2.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-							attribution: 'Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
-							subdomains: 'abcd',
-							maxZoom: 19
-						}).addTo(map2);
-						map2.fitBounds([
+						map2 = new ODI.map(document.getElementById('map2'),{}).fitBounds([
 							[lat-d/2, lon-d/2],
 							[lat+d/2, lon+d/2]
 						]);
+						map2.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+							maxZoom: 20,
+							attribution: '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						}).addTo(map2);
 					});
 					
 					</script>
@@ -173,8 +172,8 @@
 			</section>
 
 			<section class="example" id="ex3">
-				<h2>A basic map #3</h2>
-				<p>In this example we use CartoDB light tiles, use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map, and add a separate label layer on top.</p>
+				<h2>A map with a label layer</h2>
+				<p>In this example we use CartoDB Voyager tiles (without labels), use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map, and add a separate label layer on top.</p>
 				<div class="example-code">
 					<style>
 					/* Define the size of the map area */
@@ -188,28 +187,27 @@
 						var lon = -1.53393;
 						var d = 0.5;
 						
-						map3 = new ODI.map(document.getElementById('map3'),{});
-						
-						map3.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+						map3 = new ODI.map(document.getElementById('map3'),{}).fitBounds([
+							[lat-d/2, lon-d/2],
+							[lat+d/2, lon+d/2]
+						]);
+						map3.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
 							attribution: 'Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
 							subdomains: 'abcd',
 							maxZoom: 19
 						}).addTo(map3);
-						map3.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+						map3.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
 							attribution: 'Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
 							subdomains: 'abcd',
 							maxZoom: 19,
 							pane: 'labels'
 						}).addTo(map3);
-						map3.fitBounds([
-							[lat-d/2, lon-d/2],
-							[lat+d/2, lon+d/2]
-						]);
 					});
 					
 					</script>
 				</div>
 			</section>
+
 
 		</div>
 	</div>
