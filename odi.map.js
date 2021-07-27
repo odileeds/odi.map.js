@@ -1,6 +1,6 @@
 /**
   ODI Leeds Tiny Slippy Map
-  Version 0.1.2
+  Version 0.1.3
 **/
 // jshint esversion: 6
 (function(root){
@@ -24,7 +24,7 @@
 
 	function Map(el,attr){
 		var title = "ODI Map";
-		this.version = "0.1.2";
+		this.version = "0.1.3";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
 			// Version 1.1
@@ -170,36 +170,35 @@
 		var startdrag = {};
 		// Add events
 		this.trigger = function(e){
+			e.preventDefault();
+			e.stopPropagation();
 			var ev = e.type;
-			if(ev=="pointerdown" && !drag){
-				e.preventDefault();
+			if(ev=="pointerdown"){
 				drag = true;
-				startdrag = {x:e.clientX,y:e.clientY};
+				startdrag = {x:e.pageX,y:e.pageY};
 			}else if(ev=="pointerup"){
 				drag = false;
-				e.preventDefault();
-			}else if(ev=="pointermove" && drag){
-				var delta = {x:startdrag.x - e.clientX,y:startdrag.y - e.clientY};
+			}else if((ev=="pointermove" || ev=="touchmove") && drag){
+				var f = (ev=="touchmove" ? e.touches[0] : e);
+				var delta = {x:startdrag.x - f.pageX,y:startdrag.y - f.pageY};
 				this.panBy(delta);
-				startdrag = {x:e.clientX,y:e.clientY};
+				startdrag = {x:f.pageX,y:f.pageY};
 			}else if(ev=="wheel" && attr.scrollWheelZoom){
-				e.preventDefault();
 				e.wheel = e.deltaY ? -e.deltaY : e.wheelDelta/40;
 				this.setZoom(zoom+(e.wheel >= 0 ? 1 : -1));
 			}
 		};
-
 		addEvent('wheel',this.panes.el,{this:this,p:p},this.trigger);
-		addEvent('click',this.panes.el,{this:this,p:p},this.trigger);
 		addEvent('pointerdown',this.panes.el,{this:this,p:p},this.trigger);
 		addEvent('pointerup',this.panes.el,{this:this,p:p},this.trigger);
-		addEvent('pointermove',this.panes.el,{this:this,p:p},this.trigger);
-		addEvent('drag',this.panes.el,{this:this,p:p},this.trigger);
+		if(('ontouchstart' in document.documentElement)) addEvent('touchmove',this.panes.el,{this:this,p:p},this.trigger);
+		else addEvent('pointermove',this.panes.el,{this:this,p:p},this.trigger);
 
 		this.Layer = Layer;
 		this.Bounds = Bounds;
 		this.LatLon = LatLon;
 		this.Tile = Tile;
+
 		// Execute plugins
 		for(p in plugins){
 			if(plugins[p]) plugins[p].exec(this);
