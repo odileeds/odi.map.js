@@ -114,7 +114,10 @@
 	</header>
 	<div class="padded">
 		<div class="holder">
-			<p id="intro"><a href="odi.map.js">odi.map.js</a> (11.8kB; <a href="odi.map.min.js">7.7kB minified</a>; 3.5kB minified+gzipped) is our tiny, standalone, Javascript library for making basic slippy maps. There are some <a href="#ex1">examples below</a>.</p>
+			<p id="intro"><a href="odi.map.js">odi.map.js</a> (11.9kB; <a href="odi.map.min.js">7.8kB minified</a>; 3.5kB min+gzip) is our tiny library for basic slippy maps.</p>
+
+			<p>At ODI Leeds we often use the excellent <a href="https://leafletjs.com/">Leaflet library</a> to make interactive maps. Leaflet is fully featured and very powerful. However it has also increased in size over the years so this is an attempt at something much smaller for more basic use-cases. We've tried to make the syntax very similar to Leaflet's so that, once a project starts to grow in complexity, it should be relatively easy to switch to Leaflet.</p>
+
 
 			<div>
 				<pre class="prettyprint lang-html hljs">
@@ -135,11 +138,17 @@
 					<div id="map1" class="map"></div>
 					<script>
 					var map;
-					ODI.ready(function(){						
+					ODI.ready(function(){
+						// We slightly differ from Leaflet here in that we
+						// provide the DOM element rather than an ID string.
 						map = new ODI.map(document.getElementById('map1'),{
 							'center': [53.79676,-1.53393],
 							'zoom': 16
 						});
+
+						// Create a TileLayer - uses the same format as Leaflet
+						// https://leaflet-extras.github.io/leaflet-providers/preview/
+						// Then add it to the map
 						map.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 							maxZoom: 19,
 							attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -151,7 +160,7 @@
 
 			<section class="example" id="ex2">
 				<h2>fitBounds()</h2>
-				<p>In this example we use CycleOSM tiles and use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map.</p>
+				<p>In this example we use CartoDB Voyager tiles and use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map.</p>
 				<div class="example-code">
 					<style>
 					/* Define the size of the map area */
@@ -165,13 +174,18 @@
 						var lon = -1.53393;
 						var d = 0.5;
 						
+						// Rather than setting the centre and zoom we will 
+						// use fitBounds([[lat1,lon1],[lat2,lon2]])
 						map2 = new ODI.map(document.getElementById('map2'),{}).fitBounds([
 							[lat-d/2, lon-d/2],
 							[lat+d/2, lon+d/2]
 						]);
-						map2.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
-							maxZoom: 20,
-							attribution: '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						
+						// Define a TileLayer and add it to the map
+						map2.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+							attribution: 'Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+							subdomains: 'abcd',
+							maxZoom: 19
 						}).addTo(map2);
 					});
 					
@@ -181,7 +195,7 @@
 
 			<section class="example" id="ex3">
 				<h2>A map with a label layer</h2>
-				<p>In this example we use CartoDB Voyager tiles (without labels), use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map, and add a separate label layer on top.</p>
+				<p>In this example we use Esri WorldGreyCanvas tiles (without labels), use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map, and add a separate CartoDB label layer on top.</p>
 				<div class="example-code">
 					<style>
 					/* Define the size of the map area */
@@ -199,13 +213,17 @@
 							[lat-d/2, lon-d/2],
 							[lat+d/2, lon+d/2]
 						]);
-						map3.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
-							attribution: 'Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
-							subdomains: 'abcd',
-							maxZoom: 19
+						
+						// Create a tile layer that has no labels
+						map3.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+							attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+							maxZoom: 16
 						}).addTo(map3);
+						
+						// Create a tile layer for labels but add it to the
+						// 'labels' pane which sits on the top of the stack.
 						map3.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
-							attribution: 'Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+							attribution: 'Labels: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
 							subdomains: 'abcd',
 							maxZoom: 19,
 							pane: 'labels'

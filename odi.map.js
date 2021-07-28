@@ -82,7 +82,7 @@
 						if(this.panes.p[p].layers[l]){
 							this.panes.p[p].layers[l].update(bounds,zoom);
 							a = this.panes.p[p].layers[l]._attr.attribution;
-							if(attr.indexOf(a)<0) attr += a;
+							if(attr.indexOf(a)<0) attr += (attr?' ':'')+a;
 						}
 					}
 				}
