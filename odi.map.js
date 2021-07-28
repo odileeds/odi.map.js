@@ -16,10 +16,6 @@
 	// Define some constants
 	var sz = 256;
 	var PI = Math.PI;
-	var R = 6378137;
-	var D2R = PI / 180;
-	var R2D = 180 / PI;
-	var deg2m = 6371000 * 2 * PI / 360;	// Approximate conversion from degrees of latitude to metres - assumes a spherical Earth which is probably good enough for these purposes.
 	var plugins = {};
 
 	function Map(el,attr){
@@ -27,34 +23,32 @@
 		this.version = "0.1.4";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
-			// Version 1.1
-			if(this.logging || arguments[0]=="ERROR" || arguments[0]=="WARNING"){
-				var args = Array.prototype.slice.call(arguments, 0);
+			// Version 1.2
+			var a = arguments;
+			if(this.logging || a[0]=="ERROR" || a[0]=="WARNING"){
+				var args = Array.prototype.slice.call(a, 0);
 				// Build basic result
 				var extra = ['%c'+title+' '+this.version+'%c: '+args[1],'font-weight:bold;',''];
 				// If there are extra parameters passed we add them
 				if(args.length > 2) extra = extra.concat(args.splice(2));
 				if(console && typeof console.log==="function"){
-					if(arguments[0] == "ERROR") console.error.apply(null,extra);
-					else if(arguments[0] == "WARNING") console.warn.apply(null,extra);
-					else if(arguments[0] == "INFO") console.info.apply(null,extra);
+					if(a[0] == "ERROR") console.error.apply(null,extra);
+					else if(a[0] == "WARNING") console.warn.apply(null,extra);
+					else if(a[0] == "INFO") console.info.apply(null,extra);
 					else console.log.apply(null,extra);
 				}
 			}
 			return this;
 		};
-		if(!el || !el.tagName){
-			this.log('WARNING','No DOM element provided');
-			return this;
-		}
+		if(!el || !el.tagName){ this.log('WARNING','No DOM element provided'); return this; }
 		if(!attr) attr = {};
 		if(!attr.center) attr.center = [0,0];
 		if(typeof attr.maxZoom!=="number") attr.maxZoom = 19;
 		if(typeof attr.scrollWheelZoom!=="boolean") attr.scrollWheelZoom = true;
 		if(typeof attr.zoomControl!=="boolean") attr.zoomControl = true;
 		if(typeof attr.attributionControl!=="boolean") attr.attributionControl = true;
-		var center,zoom,bounds,p,drag;
-		drag = false;
+		var center,zoom,bounds,p,drag,resizeO,startdrag,init;
+		drag = init = false;
 		this.panes = {'el':document.createElement('div'),'p':{'tile':{},'overlay':{},'marker':{},'labels':{}}};
 		this.controls = {};
 		this.addPane = function(p){
@@ -161,13 +155,12 @@
 		for(p in this.panes.p){
 			if(this.panes.p[p]) this.addPane(p);
 		}
-		var init = false;
 
 		// Update layers on resize
-		var resizeO = new ResizeObserver(entries => { if(init) this.updateLayers(); });
+		resizeO = new ResizeObserver(entries => { if(init) this.updateLayers(); });
 		resizeO.observe(this.panes.el);
 
-		var startdrag = {};
+		startdrag = {};
 		// Add events
 		this.trigger = function(e){
 			e.preventDefault();
