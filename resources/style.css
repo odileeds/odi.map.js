@@ -1,0 +1,69 @@
+/* http://meyerweb.com/eric/tools/css/reset/ v2.0 | 20110126 License: none (public domain) */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
+body { line-height: 1em; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+/* apply a natural box layout model to all elements */
+*, *:before, *:after { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+/* End of reset */
+/* Main site styling */
+body {
+	background-color: #000000;
+	font-family: "Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+	font-size: 16px;
+	color: #efefef;
+	margin: 0px;
+	padding: 0px;
+	line-height: 1.44em;
+	text-rendering: optimizeLegibility;
+}
+#main { background-color: #ffffff; color: #333333; }
+.holder { position: relative; width: 1080px; max-width: 100%; margin: auto; }
+.padded { padding: 1em; }
+h1 { font-size: 1.7em; margin-top: 1em; font-weight: 600; margin: 0; }
+h1 a,h1 a:visited { color: inherit; text-decoration: none; }
+h2 { font-size: 1.7em; margin-top: 1.7647058823529411em; font-weight: 500; }
+h3 { font-size: 1.4em; margin-top: 1.428571em; }
+h1:first-child, h2:first-child, h3:first-child { margin-top: 0; }
+footer { width: 100%; padding: 1em; padding-bottom: 3em; }
+footer a, footer a:visited { color: inherit; }
+code, pre { font-family: monospace; color: #555555; background-color: #efefef; padding: 0.125em 0.25em; }
+button, .button { border: 0px; font-size: 1em; background-color: #efefef; color: black; text-decoration: none!important; display: inline-block; padding: 0.5em 1em; cursor: pointer; vertical-align: top; line-height: 1.25em; }
+.prettyprint {
+	background: #efefef;
+	padding: 1em;
+}
+section.example {
+	padding: 4em 0;
+}
+h2 + *, h3 + * { margin-top: 1em; }
+h4 { margin-top: 1em; font-weight: bold; }
+p { margin-top: 1em; }
+p + div { margin-top: 2em; }
+section.example h2 + * { margin-top: 1em; }
+.howto { margin-top: 1em; }
+.b1-bg, footer { background: black; color: white; }
+.b6-bg { background: white; color: black; }
+#intro { text-align: center; padding: 1em; max-width: 720px; margin: 0 auto 1em; }
+figure figcaption {
+	width: 70%;
+	margin: 1em auto 0 auto;
+	font-size: 0.8em;
+	line-height: 1.2em;
+	text-align: center;
+	color: #999;
+}
+figure:hover figcaption { color: inherit; }

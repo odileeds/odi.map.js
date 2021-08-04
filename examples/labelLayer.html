@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8" />
+	<link rel="icon" href="../resources/favicon.svg" />
+	<title>ODI Leeds Tiny Slippy Map</title>
+	<script src="../resources/highlight.pack.js"></script>
+	<link rel="StyleSheet" href="../resources/highlight.css" type="text/css" />
+	<link rel="StyleSheet" href="../resources/style.css" type="text/css" />
+</head>
+<body class="b6-bg">
+
+	<header>
+		<div class="b1-bg padded">
+			<div class="holder" style="text-align:center;">
+				<a href="https://odileeds.org/" aria-label="ODI Leeds"><img src="../resources/odileeds.svg" style="width:250px;height:91px;" /></a>
+				<h1><a href="../index.html">Tiny Slippy Map Library</a></h1>
+			</div>
+		</div>
+	</header>
+	<div class="padded">
+		<div class="holder">
+			<section class="example" id="ex1">
+				<h2>Example: Adding a label layer</h2>
+				<p>In this example we use CartoDB Voyager tiles (without labels), use <code>fitBounds([[lat1,lon1],[lat2,lon2]])</code> to position the map, and add a separate CartoDB label layer on top.</p>
+				<div class="example-code">
+					<script src="../odi.map.js"></script>
+					<link rel="StyleSheet" href="../odi.map.css" type="text/css" />
+					<div id="map" class="map"></div>
+					<style>
+					/* Define the size of the map area */
+					#map { height: 320px; width: 100%; }
+					</style>
+					<script>
+					var map;
+					ODI.ready(function(){
+						var lat = 53.79676;
+						var lon = -1.53393;
+						var d = 0.5;
+						
+						map = new ODI.map(document.getElementById('map'),{}).fitBounds([
+							[lat-d/2, lon-d/2],
+							[lat+d/2, lon+d/2]
+						]);
+						
+						// Create a tile layer that has no labels
+						ODI.map.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+							attribution: 'Tiles: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+							subdomains: 'abcd',
+							maxZoom: 19
+						}).addTo(map);
+						
+						// Create a tile layer for labels but add it to the
+						// 'labels' pane which sits on the top of the stack.
+						ODI.map.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+							attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+							subdomains: 'abcd',
+							maxZoom: 19,
+							pane: 'labels'
+						}).addTo(map);
+					});
+					</script>
+				</div>
+			</section>
+
+		</div>
+	</div>
+	<footer>
+		<div class="holder">
+		<p>&copy; 2021 <a href="https://odileeds.org/" target="_parent">ODI Leeds</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_parent">CC BY</a>). Find the <a href="https://github.com/odileeds/odi.map.js">code on Github</a>.</p>
+		</div>
+	</footer>
+	<script src="../resources/odi.formatexamples.js"></script>
+	<script src="https://odileeds.org/resources/odi.log.js"></script>
+	<script>
+	ODI.log.setup({'id':'odileeds','target':['odileeds.github.io']}).add('action=view');
+	</script>
+</body>
+</html>
