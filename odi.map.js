@@ -1,6 +1,6 @@
 /**
   ODI Leeds Tiny Slippy Map
-  Version 0.1.4
+  Version 0.1.5
 **/
 // jshint esversion: 6
 (function(root){
@@ -20,7 +20,7 @@
 
 	function Map(el,attr){
 		var title = "ODI Map";
-		this.version = "0.1.4";
+		this.version = "0.1.5";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
 			// Version 1.2
@@ -49,7 +49,7 @@
 		if(typeof attr.attributionControl!=="boolean") attr.attributionControl = true;
 		var center,zoom,bounds,p,drag,resizeO,startdrag,init;
 		drag = init = false;
-		this.panes = {'el':document.createElement('div'),'p':{'tile':{},'overlay':{},'marker':{},'labels':{}}};
+		this.panes = {'el':document.createElement('div'),'p':{'tile':{},'overlay':{},'marker':{},'labels':{},'popup':{}}};
 		this.controls = {};
 		this.addPane = function(p){
 			if(!this.panes.p[p] || !this.panes.p[p].el){
@@ -59,10 +59,6 @@
 				add(pane,this.panes.el);
 			}
 			return this;
-		};
-		this.tileLayer = function(url,attr){
-			if(!attr.pane) attr.pane = 'tile';	// default pane
-			return new TileLayer(url,attr);
 		};
 		this.updateLayers = function(bounds,zoom){
 			if(typeof zoom!=="number") zoom = this.getZoom();
@@ -216,10 +212,16 @@
 			this.lat = lat;
 			this.lon = lon;
 		}
+		toXY(z){
+			return {x:((this.lon+180)/360*Math.pow(2,z)),y:((1-Math.log(Math.tan(this.lat*PI/180) + 1/Math.cos(this.lat*PI/180))/PI)/2 *Math.pow(2,z))};
+		}
 		toTile(z){
-			var x = ((this.lon+180)/360*Math.pow(2,z));
-			var y = ((1-Math.log(Math.tan(this.lat*PI/180) + 1/Math.cos(this.lat*PI/180))/PI)/2 *Math.pow(2,z));
-			return Tile(x,y);
+			var xy = this.toXY(z);
+			return Tile(xy.x,xy.y);
+		}
+		toPx(z){
+			var xy = this.toXY(z);
+			return {x:Math.round(xy.x*sz),y:Math.round(xy.y*sz)};
 		}
 	}
 	class tile {
@@ -337,6 +339,13 @@
 			}
 		}
 	}
+	ODI._setAttr = setAttr;
+	ODI._addEvent = addEvent;
+	ODI._add = add;
 	ODI.map = Map;
+	ODI.map.tileLayer = function(url,attr){
+		if(!attr.pane) attr.pane = 'tile';	// default pane
+		return new TileLayer(url,attr);
+	};
 	root.ODI = ODI;
 })(window || this);
