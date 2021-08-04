@@ -27,13 +27,13 @@
 	</header>
 	<div class="padded">
 		<div class="holder">
-			<p id="intro"><a href="odi.map.js">odi.map.js</a> (12kB; <a href="odi.map.min.js">8kB minified</a>; 3.5kB min+gzip) is our tiny library for basic slippy maps.</p>
+			<p id="intro"><a href="odi.map.js">odi.map.js</a> (12kB; <a href="odi.map.min.js">8kB minified</a>; &lt;4kB min+gzip) is our tiny library for basic slippy maps.</p>
 
 			<p>At ODI Leeds we often use the excellent <a href="https://leafletjs.com/">Leaflet library</a> to make interactive maps. Leaflet is fully featured and very powerful. However it has also increased in size over the years so this is an attempt at something much smaller for more basic use-cases. We've tried to make the syntax very similar to Leaflet's so that, once a project starts to grow in complexity, it should be relatively easy to switch to Leaflet.</p>
 
 			<section class="example" id="ex1">
 				<h2>A basic map</h2>
-				<p>Let's create a very basic map using standard OpenStreetMap tiles. We centre the map on ODI Leeds.</p>
+				<p>Let's create a very basic map using Esri WorldGreyCanvas tiles. We centre the map on ODI Leeds.</p>
 
 				<div class="example-code">
 					<script src="odi.map.js"></script>
@@ -56,9 +56,9 @@
 						// Create a TileLayer - uses the same format as Leaflet
 						// https://leaflet-extras.github.io/leaflet-providers/preview/
 						// Then add it to the map
-						ODI.map.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-							maxZoom: 19,
-							attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						ODI.map.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+							attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+							maxZoom: 16
 						}).addTo(map);
 					});
 					</script>
