@@ -31,7 +31,7 @@
 					<div id="map" class="map"></div>
 					<style>
 					/* Define the size of the map area */
-					#map { height: 320px; width: 100%; }
+					#map { height: 400px; width: 100%; }
 					</style>
 					<script>
 					var map;
@@ -39,13 +39,13 @@
 						var geojson = {
 							"type": "FeatureCollection", 
 							"features": [
-								{"type":"Feature","properties":{"type":"shop","name":"Cooperative"},"geometry":{"type": "Point","coordinates": [-1.53673,53.79635]}},
-								{"type":"Feature","properties":{"type":"shop","name":"Morrisons","size":"large"},"geometry":{"type": "Point","coordinates": [-1.5449586,53.8021905]}},
+								{"type":"Feature","properties":{"type":"shop","name":"Cooperative","description":"Co-op Food, 44 New York Street, LS2 7DY"},"geometry":{"type": "Point","coordinates": [-1.53673,53.79635]}},
+								{"type":"Feature","properties":{"type":"shop","name":"Morrisons","description":"","size":"large"},"geometry":{"type": "Point","coordinates": [-1.5449586,53.8021905]}},
 								{"type":"Feature","properties":{"type":"shop","name":"Sainsburys"},"geometry":{"type": "Point","coordinates": [-1.54360,53.79961]}},
-								{"type":"Feature","properties":{"type":"shop","name":"Sainsburys"},"geometry":{"type": "Point","coordinates": [-1.54436,53.79596]}},
-								{"type":"Feature","properties":{"type":"shop","name":"Sainsburys"},"geometry":{"type": "Point","coordinates": [-1.5450275,53.7977083]}},
-								{"type":"Feature","properties":{"type":"shop","name":"Sainsburys"},"geometry":{"type": "Point","coordinates": [-1.5448719,53.8013557]}},
-								{"type":"Feature","properties":{"type":"shop","name":"Tesco"},"geometry":{"type": "Point","coordinates": [-1.54535,53.79590]}},
+								{"type":"Feature","properties":{"type":"shop","name":"Sainsburys","description":"Sainsbury's Local, 63 Boar Lane, LS1 6HW"},"geometry":{"type": "Point","coordinates": [-1.54436,53.79596]}},
+								{"type":"Feature","properties":{"type":"shop","name":"Sainsburys","description":"Sainsbury's, 54 Albion Street, LS1 6AD"},"geometry":{"type": "Point","coordinates": [-1.5450275,53.7977083]}},
+								{"type":"Feature","properties":{"type":"shop","name":"Sainsburys","description":"Leeds Headrow Superstore, 22-26 The Headrow, LS1 8EQ"},"geometry":{"type": "Point","coordinates": [-1.5448719,53.8013557]}},
+								{"type":"Feature","properties":{"type":"shop","name":"Tesco","description":"Tesco Express, 54 Boar Lane, LS1 5EL"},"geometry":{"type": "Point","coordinates": [-1.54535,53.79590]}},
 								{"type":"Feature","properties":{"type":"shop","name":"Tesco"},"geometry":{"type": "Point","coordinates": [-1.5462370,53.7977282]}},
 								{"type":"Feature","properties":{"type":"park"},"geometry":{"type": "Polygon","coordinates": [[[-1.5356236696243286,53.79638620351626],[-1.5356746315956116,53.79603132679832],[-1.5343844890594482,53.79620084417656],[-1.5343496203422546,53.79631808009345],[-1.5344139933586118,53.79637194513458],[-1.5356236696243286,53.79638620351626]]]}},
 								{"type":"Feature","properties":{"type":"park"},"geometry":{"type": "Polygon","coordinates": [[[-1.5342825651168823,53.79614064182162],[-1.53571218252182,53.79592518005375],[-1.5357255935668945,53.79565901987109],[-1.5357014536857605,53.79551168047222],[-1.5346929430961609,53.79544513992887],[-1.5344837307929993,53.79556396225364],[-1.5343523025512693,53.79559881673839],[-1.5343093872070312,53.795755661561294],[-1.5342825651168823,53.79614064182162]]]}},
@@ -105,8 +105,8 @@
 							'onEachFeature': function onEachFeature(feature,layer){
 								popup = "";
 								if(feature.properties.name) popup += '<h3>'+feature.properties.name+'</h3>';
-								if(feature.properties.type) popup += '<p>'+feature.properties.type+'</p>';
-								//console.log(this,feature,layer)
+								if(feature.properties.type) popup += '<p>Type: '+feature.properties.type+'</p>';
+								if(feature.properties.description) popup += '<p>Address: '+feature.properties.description+'</p>';
 								if(popup) layer.bindPopup(popup);
 							}
 						}).addTo(map);

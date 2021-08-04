@@ -43,7 +43,7 @@
 						if(this._popup){
 							var bb = this._el.getBoundingClientRect();
 							var bbo = m.panes.p.popup.el.getBoundingClientRect();
-							ODI._setAttr(this._popup,{'style':'top:'+(bb.top-bbo.top)+'px;left:'+(bb.left-bbo.left+bb.width/2)+'px;'});
+							ODI._setAttr(this._popup,{'style':'top:'+(bb.top-bbo.top).toFixed(1)+'px;left:'+(bb.left-bbo.left+bb.width/2).toFixed(1)+'px;'});
 						}
 					};
 					return this;
