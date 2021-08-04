@@ -1,6 +1,6 @@
 /**
   ODI Leeds Tiny Slippy Map
-  Version 0.1.5
+  Version 0.1.6
 **/
 // jshint esversion: 6
 (function(root){
@@ -20,7 +20,7 @@
 
 	function Map(el,attr){
 		var title = "ODI Map";
-		this.version = "0.1.5";
+		this.version = "0.1.6";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
 			// Version 1.2
@@ -72,12 +72,12 @@
 						if(this.panes.p[p].layers[l]){
 							this.panes.p[p].layers[l].update(bounds,zoom);
 							a = this.panes.p[p].layers[l]._attr.attribution;
-							if(attr.indexOf(a)<0) attr += (attr?' ':'')+a;
+							if(a && attr.indexOf(a)<0) attr += (attr?' ':'')+a;
 						}
 					}
 				}
 			}
-			if(this.controls.credit) this.controls.credit.innerHTML = attr+' | '+title;
+			if(this.controls.credit) this.controls.credit.innerHTML = attr+(attr?' | ':'')+title;
 			return this;
 		};
 		this.getZoom = function(){ return zoom; };
@@ -308,12 +308,14 @@
 			min = bounds.nw.toTile(z);
 			max = bounds.se.toTile(z);
 			urls = [];
-			for(x = min.xint; x <= max.xint; x++){
-				if(subs > 0) s = x%subs;
-				for(y = min.yint; y <= max.yint; y++){
-					turl = this._url.replace(/\{z\}/g,z).replace(/\{y\}/g,y).replace(/\{x\}/g,x).replace(/\{r\}/g,(window.devicePixelRatio > 1 ? '@2x':''));
-					if(subs > 0) turl = turl.replace(/\{s\}/g,this._attr.subdomains[s]);
-					urls.push({'url':turl,z:z,'tile':Tile(x,y)});
+			if(z<=this._attr.maxZoom){
+				for(x = min.xint; x <= max.xint; x++){
+					if(subs > 0) s = x%subs;
+					for(y = min.yint; y <= max.yint; y++){
+						turl = this._url.replace(/\{z\}/g,z).replace(/\{y\}/g,y).replace(/\{x\}/g,x).replace(/\{r\}/g,(window.devicePixelRatio > 1 ? '@2x':''));
+						if(subs > 0) turl = turl.replace(/\{s\}/g,this._attr.subdomains[s]);
+						urls.push({'url':turl,z:z,'tile':Tile(x,y)});
+					}
 				}
 			}
 			return urls;
