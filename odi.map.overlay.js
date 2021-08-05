@@ -1,7 +1,7 @@
 /**
   ODI Leeds Tiny Slippy Map
   Plugin for overlays (e.g. GeoJSON)
-  Version 0.1.2
+  Version 0.1.3
 **/
 // jshint esversion: 6
 (function(root){
@@ -21,13 +21,13 @@
 	if(ODI.map){
 		var ns = 'http://www.w3.org/2000/svg';
 		ODI.map.prototype.register('overlay',{
-			'version':'0.1.2',
+			'version':'0.1.3',
 			'exec':function(_map){
 				function Thing(feature,m){
 					this.bindPopup = function(txt){
 						this._popuptext = txt;
 						if(feature.marker) this._el = feature.marker._el.querySelector('path');
-						else if(feature.svg) this._el = feature.svg;
+						else if(feature._svg) this._el = feature._svg;
 						ODI._addEvent('click',this._el,{'popup':txt,el:this._el,this:this},function(e){
 							var popup = m.panes.p.popup.el.querySelector('.odi-map-popup');
 							if(popup) popup.parentNode.removeChild(popup);
@@ -79,12 +79,11 @@
 						this._json = json||{};
 						this._svg = svgEl('svg');
 						this._init = false;
-
 						ODI._setAttr(this._svg,{'xmlns':ns,'version':'1.1','overflow':'visible','preserveAspectRatio':'xMinYMin meet','vector-effect':'non-scaling-stroke'});
 						this._el.appendChild(this._svg);
 					}
 					update(bounds,z){
-						var offset,f,xy,nw,se,el,c,i,j,k,d,props,defaults,attr,g;
+						var offset,f,xy,nw,se,el,c,i,j,k,d,props,style,defaults,attr,g;
 						// Get tile x/y of centre
 						offset = bounds.getCenter().toPx(z);
 						nw = bounds.nw.toPx(z);
@@ -93,9 +92,11 @@
 						ODI._setAttr(this._svg,{'viewBox':((nw.x-offset.x).toFixed(3)+' '+(nw.y-offset.y).toFixed(3)+' '+(se.x-nw.x).toFixed(3)+' '+(se.y-nw.y).toFixed(3))});
 						for(f = 0; f < this._json.features.length; f++){
 							props = {};
-							if(typeof this._attr.style==="function"){
-								props = Object.assign({}, defaults, this._attr.style.call(this,this._json.features[f])||{});
-							}
+							style = {};
+							if(typeof this._attr.style==="function") style = this._attr.style.call(this,this._json.features[f])||{};
+							// Extend
+							props = Object.assign({}, defaults, style);
+
 							g = this._json.features[f].geometry;
 							c = g.coordinates;
 							if(g.type=="Point"){
@@ -108,10 +109,10 @@
 									this._json.features[f].marker.setLatLon(this._map.LatLon(c[1],c[0]));
 								}
 							}else if(g.type=="Polygon"){
-								if(!this._json.features[f].svg){
+								if(!this._json.features[f]._svg){
 									el = svgEl('path');
 									this._svg.appendChild(el);
-									this._json.features[f].svg = el;								
+									this._json.features[f]._svg = el;								
 								}
 								// Make the path
 								d = '';
@@ -124,11 +125,11 @@
 								props.d = d;
 								props.fill = true;
 							}else if(g.type=="LineString"){
-								if(!this._json.features[f].svg){
+								if(!this._json.features[f]._svg){
 									el = svgEl('path');
 									ODI._setAttr(el,{'r':5,stroke:'black','stroke-width':1,fill:'none'});
 									this._svg.appendChild(el);
-									this._json.features[f].svg = el;								
+									this._json.features[f]._svg = el;								
 								}
 								// Make the points
 								d = '';
@@ -139,11 +140,11 @@
 								props.d = d;
 								props.fill = false;
 							}else if(g.type=="MultiLineString"){
-								if(!this._json.features[f].svg){
+								if(!this._json.features[f]._svg){
 									el = svgEl('path');
 									ODI._setAttr(el,{'r':5,stroke:'black','stroke-width':1,fill:'none'});
 									this._svg.appendChild(el);
-									this._json.features[f].svg = el;								
+									this._json.features[f]._svg = el;								
 								}
 								// Make the points
 								d = '';
@@ -156,10 +157,10 @@
 								props.d = d;
 								props.fill = false;
 							}else if(g.type=="MultiPolygon"){
-								if(!this._json.features[f].svg){
+								if(!this._json.features[f]._svg){
 									el = svgEl('path');
 									this._svg.appendChild(el);
-									this._json.features[f].svg = el;								
+									this._json.features[f]._svg = el;								
 								}
 								// Make the path
 								d = '';
@@ -176,32 +177,30 @@
 								props.d = d;
 								props.fill = true;
 							}
-							if(this._json.features[f].svg){
+							if(this._json.features[f]._svg){
 								if(props.fill && !props.fillColor) props.fillColor = props.color+'';
 								props = renameProps(props,{'fillColor':'fill','color':'stroke','opacity':'stroke-opacity','fillOpacity':'fill-opacity','weight':'stroke-width'});
-								this._json.features[f].svg.innerHTML = (props.title ? '<title>'+props.title+'</title>':'');
-								ODI._setAttr(this._json.features[f].svg,props);
+								this._json.features[f]._svg.innerHTML = (props.title ? '<title>'+props.title+'</title>':'');
+								ODI._setAttr(this._json.features[f]._svg,props);
 							}
 							if(!this._init && typeof this._attr.onEachFeature==="function"){
 								this._json.features[f]._thing = new Thing(this._json.features[f],this._map);
 								this._attr.onEachFeature.call(this,this._json.features[f],this._json.features[f]._thing);
 							}
-							this._json.features[f]._thing.setPosition();
+							if(this._json.features[f]._thing) this._json.features[f]._thing.setPosition();
 						}
 						this._init = true;
 					}
 					addTo(m){
-						var w,h;
 						this._map = m;
 						var p = this._attr.pane;
 						if(!m.panes.p[p]) return m.log('ERROR','No pane %c'+p+'%c exists.','font-style:italic;','');
 						m.panes.p[p].el.appendChild(this._el);
 						m.panes.p[p].layers.push(this);
+						// Update the width/height
+						ODI._setAttr(this._svg,{'width':this._el.offsetWidth,'height':this._el.offsetHeight});
+						// Update the view
 						this.update(this._map.getBounds(),this._map.getZoom());
-						w = this._el.offsetWidth;
-						h = this._el.offsetHeight;
-						ODI._setAttr(this._svg,{'viewBox':('0 0 '+w+' '+h),'width':w,'height':h});
-
 					}
 				}
 				ODI.map.geoJSON = function(geo,attr){

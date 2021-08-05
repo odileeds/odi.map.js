@@ -3,7 +3,7 @@
 .odi-map-pane { position: absolute; left: 50%; top: 50%; cursor: move; }
 .odi-map-pane-tile { z-index: 200; }
 .odi-map-pane-overlay { z-index: 300; left: 0; top: 0; width: 100%; height: 100%; }
-.odi-map-pane-overlay .odi-map-layer { width: 100%; height: 100%; }
+.odi-map-pane-overlay .odi-map-layer { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
 .odi-map-pane-overlay svg > *, .odi-map-pane-marker svg { cursor: pointer; }
 .odi-map-pane-marker { z-index: 400; }
 .odi-map-pane-labels { z-index: 500; pointer-events: none; }
