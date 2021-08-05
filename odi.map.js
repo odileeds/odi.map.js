@@ -251,14 +251,14 @@
 	class Layer {
 		constructor(attr,pane){
 			this._attr = attr || {};
-			this._el = document.createElement('div');
-			this._el.classList.add('odi-map-layer');
 			return this;
 		}
 		addTo(m){
 			this._map = m;
 			var p = this._attr.pane;
 			if(!m.panes.p[p]) return m.log('ERROR','No pane %c'+p+'%c exists.','font-style:italic;','');
+			this._el = document.createElement('div');
+			this._el.classList.add('odi-map-layer');
 			m.panes.p[p].el.appendChild(this._el);
 			m.panes.p[p].layers.push(this);
 			this.update(this._map.getBounds(),this._map.getZoom());

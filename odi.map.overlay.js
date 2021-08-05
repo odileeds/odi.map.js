@@ -54,7 +54,7 @@
 						this._ll = ll||ODI.map.LatLon();
 						this._el = svgEl('svg');
 						this._el.innerHTML = attr.svg;
-						ODI._setAttr(this._el,{'xmlns':ns,'version':'1.1','overflow':'visible','width':'0','height':'0'});
+						ODI._setAttr(this._el,{'overflow':'visible','width':'1','height':'1'});
 					}
 					addTo(m){
 						this._map = m;
@@ -77,10 +77,33 @@
 					constructor(json,attr,pane){
 						super(attr,pane);
 						this._json = json||{};
-						this._svg = svgEl('svg');
-						this._init = false;
-						ODI._setAttr(this._svg,{'xmlns':ns,'version':'1.1','overflow':'visible','preserveAspectRatio':'xMinYMin meet','vector-effect':'non-scaling-stroke'});
-						this._el.appendChild(this._svg);
+						this._attr = attr || {};
+					}
+					addTo(m){
+						var p,l;
+						this._map = m;
+						p = this._attr.pane;
+						if(!m.panes.p[p]) return m.log('ERROR','No pane %c'+p+'%c exists.','font-style:italic;','');
+
+						this._el = m.panes.p[p].el.querySelector('.odi-map-layer');
+						if(!this._el){
+							l = document.createElement('div');
+							l.classList.add('odi-map-layer');
+							m.panes.p[p].el.appendChild(l);
+							this._el = l;
+
+							// Create the SVG element
+							this._svg = svgEl('svg');
+							ODI._setAttr(this._svg,{'overflow':'visible','preserveAspectRatio':'xMinYMin meet','vector-effect':'non-scaling-stroke'});
+							this._el.appendChild(this._svg)
+						}else{
+							this._svg = this._el.querySelector('svg');
+						}
+
+						m.panes.p[p].el.appendChild(this._el);
+						m.panes.p[p].layers.push(this);
+						// Update the view
+						this.update(this._map.getBounds(),this._map.getZoom());
 					}
 					update(bounds,z){
 						var offset,f,xy,nw,se,el,c,i,j,k,d,props,style,defaults,attr,g;
@@ -94,6 +117,8 @@
 							props = {};
 							style = {};
 							if(typeof this._attr.style==="function") style = this._attr.style.call(this,this._json.features[f])||{};
+							else if(typeof this._attr.style==="object") style = this._attr.style;
+
 							// Extend
 							props = Object.assign({}, defaults, style);
 
@@ -103,10 +128,11 @@
 								if(!this._json.features[f].marker){
 									// Create the marker if needed
 									attr = {'svg':('<path d="M 0,0 L -10.84,-22.86 A 12 12 1 1 1 10.84,-22.86 L 0,0 z" fill="%COLOUR%" fill-opacity="1"></path><ellipse cx="0" cy="-27.5" rx="4" ry="4" fill="white"></ellipse>').replace(/%COLOUR%/,props.fillColor||defaults.color)};
-									this._json.features[f].marker = ODI.map.marker(this._map.LatLon(c[1],c[0]),attr).addTo(this._map);
+									this._json.features[f].marker = ODI.map.marker(this._map.LatLon(c[1],c[0]),attr);
+									this._json.features[f].marker.addTo(this._map);
 								}else{
 									// Update position
-									this._json.features[f].marker.setLatLon(this._map.LatLon(c[1],c[0]));
+									this._json.features[f].marker.setLatLon(this._map.LatLon(c[1],c[0]),offset);
 								}
 							}else if(g.type=="Polygon"){
 								if(!this._json.features[f]._svg){
@@ -183,24 +209,13 @@
 								this._json.features[f]._svg.innerHTML = (props.title ? '<title>'+props.title+'</title>':'');
 								ODI._setAttr(this._json.features[f]._svg,props);
 							}
-							if(!this._init && typeof this._attr.onEachFeature==="function"){
+							if(!this._json.features[f]._added && typeof this._attr.onEachFeature==="function"){
 								this._json.features[f]._thing = new Thing(this._json.features[f],this._map);
 								this._attr.onEachFeature.call(this,this._json.features[f],this._json.features[f]._thing);
+								this._json.features[f]._added = true;
 							}
 							if(this._json.features[f]._thing) this._json.features[f]._thing.setPosition();
 						}
-						this._init = true;
-					}
-					addTo(m){
-						this._map = m;
-						var p = this._attr.pane;
-						if(!m.panes.p[p]) return m.log('ERROR','No pane %c'+p+'%c exists.','font-style:italic;','');
-						m.panes.p[p].el.appendChild(this._el);
-						m.panes.p[p].layers.push(this);
-						// Update the width/height
-						ODI._setAttr(this._svg,{'width':this._el.offsetWidth,'height':this._el.offsetHeight});
-						// Update the view
-						this.update(this._map.getBounds(),this._map.getZoom());
 					}
 				}
 				ODI.map.geoJSON = function(geo,attr){
