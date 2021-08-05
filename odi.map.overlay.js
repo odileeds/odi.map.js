@@ -1,7 +1,7 @@
 /**
   ODI Leeds Tiny Slippy Map
   Plugin for overlays (e.g. GeoJSON)
-  Version 0.1.3
+  Version 0.1.4
 **/
 // jshint esversion: 6
 (function(root){
@@ -17,11 +17,10 @@
 		}
 		return props;
 	}
-
 	if(ODI.map){
 		var ns = 'http://www.w3.org/2000/svg';
 		ODI.map.prototype.register('overlay',{
-			'version':'0.1.3',
+			'version':'0.1.4',
 			'exec':function(_map){
 				function Thing(feature,m){
 					this.bindPopup = function(txt){
@@ -29,25 +28,49 @@
 						if(feature.marker) this._el = feature.marker._el.querySelector('path');
 						else if(feature._svg) this._el = feature._svg;
 						ODI._addEvent('click',this._el,{'popup':txt,el:this._el,this:this},function(e){
-							var popup = m.panes.p.popup.el.querySelector('.odi-map-popup');
-							if(popup) popup.parentNode.removeChild(popup);
-							this._popup = document.createElement('div');
-							this._popup.classList.add('odi-map-popup');
-							m.panes.p.popup.el.appendChild(this._popup);
-							this._popup.innerHTML = '<div class="odi-map-popup-inner">'+e.data.popup+'</div>';
-							this.setPosition();
+							popup.bindPopup(e.data.popup).addTo(m.panes.p.popup.el).setTarget(this._el).openPopup().setPosition(e.target);
 						});
 						return this;
 					};
-					this.setPosition = function(){
-						if(this._popup){
-							var bb = this._el.getBoundingClientRect();
-							var bbo = m.panes.p.popup.el.getBoundingClientRect();
-							ODI._setAttr(this._popup,{'style':'top:'+(bb.top-bbo.top).toFixed(1)+'px;left:'+(bb.left-bbo.left+bb.width/2).toFixed(1)+'px;'});
-						}
-					};
 					return this;
 				}
+				function Popup(){
+					this.open = false;
+					this.bindPopup = function(txt){
+						this.txt = txt;
+						return this;
+					};
+					this.openPopup = function(){
+						if(!this.pane) return this;
+						var p = this.pane.querySelector('.odi-map-popup');
+						if(p) p.parentNode.removeChild(p);
+						p = document.createElement('div');
+						p.classList.add('odi-map-popup');
+						this.pane.appendChild(p);
+						p.innerHTML = '<div class="odi-map-popup-inner">'+this.txt+'</div>';
+						this.p = p;
+						this.open = true;
+						return this;
+					}
+					this.addTo = function(el){
+						this.pane = el;
+						return this;
+					};
+					this.setTarget = function(el){
+						if(el) this._target = el;
+						return this;
+					}
+					this.setPosition = function(el){
+						if(this.p && this.open){
+							var bb = this._target.getBoundingClientRect();
+							var bbo = this.pane.getBoundingClientRect();
+							ODI._setAttr(this.p,{'style':'top:'+(bb.top-bbo.top).toFixed(1)+'px;left:'+(bb.left-bbo.left+bb.width/2).toFixed(1)+'px;'});
+						}
+						return this;
+					}
+					return this;
+				}
+				var popup = new Popup();
 				class marker extends _map.Layer {
 					constructor(ll,attr,pane){
 						super(attr,pane);
@@ -65,12 +88,29 @@
 						this.setLatLon(this._ll);
 						return this;
 					}
+					update(bounds,z){
+						return this.setLatLon(this._ll,bounds.getCenter().toPx(z));
+					}
 					setLatLon(ll,offset){
 						var z,xy;
 						z = this._map.getZoom();
 						if(!offset) offset = this._map.getCenter().toPx(z);
 						xy = ll.toPx(z);
 						ODI._setAttr(this._el,{'class':'odi-map-marker','style':'transform:translate3d('+(xy.x-offset.x)+'px,'+(xy.y-offset.y)+'px,0)'});
+						return this;
+					}
+					bindPopup(txt){
+						this._popup = txt;
+						ODI._addEvent('click',this._el,{'popup':txt,this:this},function(e){
+							popup.bindPopup(this._popup).addTo(this._map.panes.p.popup.el).setTarget(this._el.childNodes[0]).openPopup().setPosition(e.target);
+						});
+						return this;
+					}
+					openPopup(){
+						var ev = document.createEvent('HTMLEvents');
+						ev.initEvent('click', true, false);
+						this._el.dispatchEvent(ev);
+						return this;
 					}
 				}
 				class geoJSONLayer extends _map.Layer {
@@ -130,9 +170,6 @@
 									attr = {'svg':('<path d="M 0,0 L -10.84,-22.86 A 12 12 1 1 1 10.84,-22.86 L 0,0 z" fill="%COLOUR%" fill-opacity="1"></path><ellipse cx="0" cy="-27.5" rx="4" ry="4" fill="white"></ellipse>').replace(/%COLOUR%/,props.fillColor||defaults.color)};
 									this._json.features[f].marker = ODI.map.marker(this._map.LatLon(c[1],c[0]),attr);
 									this._json.features[f].marker.addTo(this._map);
-								}else{
-									// Update position
-									this._json.features[f].marker.setLatLon(this._map.LatLon(c[1],c[0]),offset);
 								}
 							}else if(g.type=="Polygon"){
 								if(!this._json.features[f]._svg){
@@ -214,8 +251,8 @@
 								this._attr.onEachFeature.call(this,this._json.features[f],this._json.features[f]._thing);
 								this._json.features[f]._added = true;
 							}
-							if(this._json.features[f]._thing) this._json.features[f]._thing.setPosition();
 						}
+						popup.setPosition();
 					}
 				}
 				ODI.map.geoJSON = function(geo,attr){

@@ -1,6 +1,6 @@
 /**
   ODI Leeds Tiny Slippy Map
-  Version 0.1.6
+  Version 0.1.7
 **/
 // jshint esversion: 6
 (function(root){
@@ -20,7 +20,7 @@
 
 	function Map(el,attr){
 		var title = "ODI Map";
-		this.version = "0.1.6";
+		this.version = "0.1.7";
 		this.logging = (location.search.indexOf('debug=true') >= 0);
 		this.log = function(){
 			// Version 1.2
